@@ -1,6 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var _ = require('underscore');
+var db = require('./db.js');
+
 
 var app = express();
 var PORT = process.env.PORT || 3000;
@@ -77,20 +79,32 @@ app.post('/todos', function (req, res) {
 	// user _.pick from underscore library
 	var body = _.pick(req.body, 'description','completed');
 	
-	_.pick({body}, body.completed, body.description);
+	// _.pick({body}, body.completed, body.description);
 
-	if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
-		return res.status(400).send();
-	}
+	// if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
+	// 	return res.status(400).send();
+	// }
 
-	body.description = body.description.trim();
+	// body.description = body.description.trim();
 
-	body.id = todoNextId;
-	todoNextId++;
+	// body.id = todoNextId;
+	// todoNextId++;
 
-	todos.push(body);
+	// todos.push(body);
 
-	res.json(body);
+	// res.json(body);
+
+
+	//call db.todo.create
+	db.todo.create(body).then(function (todo) {
+		res.json(todo.toJSON());	
+	}, function (e) {
+		res.status(400).json(e);
+	});
+	// if the promise succeeds
+		// respond with 200 and value of todo object  (todo.JSON)
+	// else (e)  errr
+		// res.status(400).json(e);
 });
 
 // DELETE /todos/:id
@@ -137,6 +151,9 @@ app.put('/todos/:id', function (req, res) {
 
 });
 
-app.listen(PORT, function () {
-	console.log('Express listening on port ' + PORT + '!');  
+db.sequelize.sync().then(function () {
+	app.listen(PORT, function () {
+		console.log('Express listening on port ' + PORT + '!');  
+	});
 });
+
