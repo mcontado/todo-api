@@ -24,6 +24,7 @@ sequelize.sync({
 }).then(function () {
 	console.log('Everything is sync.');
 
+
 	Todo.findById(3).then(function (todo) {
 		if (todo) {
 			console.log(todo.toJSON());
@@ -32,6 +33,7 @@ sequelize.sync({
 		}
 	})
 
+	//* CREATING NEW DATA*//
 	// Todo.create({
 	// 	description: 'Take out trash',
 	// 	completed: false
